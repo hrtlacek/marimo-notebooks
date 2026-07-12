@@ -4,6 +4,7 @@
 #     "marimo>=0.23.14",
 #     "matplotlib==3.11.0",
 #     "numpy==2.5.1",
+#     "scipy==1.18.0",
 #     "wigglystuff==0.5.13",
 # ]
 # ///
@@ -25,11 +26,12 @@ def _():
 def _():
     import numpy as np
     import matplotlib.pyplot as plt
-    import scipy.signal as sig
+    import io
+    from scipy.io import wavfile
     from wigglystuff import ChartPuck
     N = 100
     π = np.pi
-    return ChartPuck, N, np, plt, π
+    return ChartPuck, N, io, np, plt, wavfile, π
 
 
 @app.cell(hide_code=True)
@@ -48,8 +50,15 @@ def _(irplot, mo, widget):
 
 
 @app.cell
-def _(h, mo):
-    mo.audio(h, rate=44100)
+def _(h, io, mo, np, wavfile):
+
+    buf = io.BytesIO()
+    # array must be int16 or float32 for wavfile.write; scale if needed
+    h_pb = h/max(abs(h))
+    wavfile.write(buf, rate=44100, data=h_pb.astype(np.float32))
+    buf.seek(0)
+    mo.audio(buf)
+    # mo.audio(h, rate=44100)
     return
 
 
