@@ -1,6 +1,7 @@
 # /// script
 # requires-python = ">=3.13"
 # dependencies = [
+#     "lcapy==1.26",
 #     "marimo>=0.23.14",
 #     "matplotlib==3.11.0",
 #     "numpy==2.5.1",
@@ -33,16 +34,30 @@ def _():
     return ChartPuck, N, np, plt, π
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Markdown Test
+    $$ H(z) = \frac{1}{1-p\cdot z^{-1}}$$
+    """)
+    return
+
+
 @app.cell
 def _(irplot, mo, widget):
     mo.hstack([widget, irplot], gap=0., justify="start", align="center")
+    return
 
+
+@app.cell
+def _(h, mo):
+    mo.audio(h, rate=44100)
     return
 
 
 @app.cell
 def _(ChartPuck, mo, np, plt, π):
-    fig, ax = plt.subplots(figsize=(3, 3))
+    fig, ax = plt.subplots(figsize=(3, 3), tight_layout=True)
     ω_uc = np.linspace(0, 2*π,100)
     uc = np.exp(1j*ω_uc)
     ax.plot(np.real(uc), np.imag(uc), alpha=0.6)
@@ -58,8 +73,6 @@ def _(ChartPuck, mo, np, plt, π):
     plt.close(fig)
 
     widget = mo.ui.anywidget(puck)
-
-
     return (widget,)
 
 
@@ -69,9 +82,11 @@ def _(N, mo, np, plt, widget, π):
     ω = np.linspace(0, π, N)
     z = np.exp(1j*ω)
     H = lambda z: 1 / (1 -p*z**-1)
-    figtf, axtf = plt.subplots(1,2,figsize=(8, 3))
+    figtf, axtf = plt.subplots(1,2,figsize=(8, 3),tight_layout=True)
     axtf[0].plot(ω,20*np.log10(abs(H(z)+1e-6)))
     axtf[0].set_ylim([-6,30])
+    axtf[0].set_title("Magnitude $|H(\omega)|$")
+    axtf[0].set_xlabel('$\omega$')
     mag = mo.ui.matplotlib(axtf[0])
 
     h = np.fft.irfft(H(z),N*2)
@@ -83,7 +98,7 @@ def _(N, mo, np, plt, widget, π):
     plt.grid(True,alpha=0.3)
     plt.ylim([-1,1])
     irplot = mo.ui.matplotlib(axtf[1])
-    return (irplot,)
+    return h, irplot
 
 
 @app.cell
