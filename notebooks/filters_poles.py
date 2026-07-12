@@ -37,7 +37,6 @@ def _():
 @app.cell
 def _(irplot, mo, widget):
     mo.hstack([widget, irplot], gap=0., justify="start", align="center")
-
     return
 
 
@@ -59,7 +58,6 @@ def _(ChartPuck, mo, np, plt, π):
     plt.close(fig)
 
     widget = mo.ui.anywidget(puck)
-
 
     return (widget,)
 
