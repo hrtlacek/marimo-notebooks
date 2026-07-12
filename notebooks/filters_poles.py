@@ -23,14 +23,6 @@ def _():
 
 
 @app.cell
-def _(mo, tf_wi, widget):
-
-    mo.hstack([widget, tf_wi])
-
-    return
-
-
-@app.cell
 def _():
 
     import numpy as np
@@ -43,6 +35,14 @@ def _():
     t = np.arange(N)/sr
     π = np.pi
     return ChartPuck, np, plt, π
+
+
+@app.cell
+def _(mo, tf_wi, widget):
+
+    mo.hstack([widget, tf_wi])
+
+    return
 
 
 @app.cell
@@ -70,9 +70,6 @@ def _(ChartPuck, mo, np, plt, π):
 
 @app.cell
 def _(mo, np, plt, widget, π):
-
-
-    # ax = gca()
     p = widget.x[0] + 1j*widget.y[0]
     ω = np.linspace(0, π, 100)
     z = np.exp(1j*ω)
@@ -87,18 +84,6 @@ def _(mo, np, plt, widget, π):
 def _(p):
 
     p
-    return
-
-
-@app.cell
-def _(widget):
-    widget.x[0]
-    return
-
-
-@app.cell
-def _(widget):
-    widget
     return
 
 
