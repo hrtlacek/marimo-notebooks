@@ -24,15 +24,18 @@ def _():
 
 
 @app.cell
-def _():
+def _(mo):
     import numpy as np
     import matplotlib.pyplot as plt
-    import io
     from scipy.io import wavfile
+    import base64, io
     from wigglystuff import ChartPuck
-    N = 100
+    style_path = str(mo.notebook_location() / "public" / "matplotlibrc")
+    plt.style.use(style_path)
+    sr = 44100
+    N = 1000
     π = np.pi
-    return ChartPuck, N, io, np, plt, wavfile, π
+    return ChartPuck, N, base64, io, np, plt, sr, wavfile, π
 
 
 @app.cell(hide_code=True)
@@ -45,20 +48,25 @@ def _(mo):
 
 
 @app.cell
-def _(irplot, mo, widget):
-    mo.hstack([widget, irplot], gap=0., justify="start", align="center")
+def _(base64, h, io, irplot, mo, np, sr, wavfile, widget):
+    buf = io.BytesIO()
+    wavfile.write(buf, rate=sr, data=h.astype(np.float32))  # your_array: int16 or float32
+    b64 = base64.b64encode(buf.getvalue()).decode("ascii")
+    aud = mo.Html(f'<audio controls src="data:audio/wav;base64,{b64}"></audio>')
+
+    mo.vstack([mo.hstack([widget, irplot], gap=0., justify="start", align="center"), aud])
     return
 
 
 @app.cell
-def _(h, io, mo, np, wavfile):
+def _():
 
-    buf = io.BytesIO()
-    # array must be int16 or float32 for wavfile.write; scale if needed
-    h_pb = h/max(abs(h))
-    wavfile.write(buf, rate=44100, data=h_pb.astype(np.float32))
-    buf.seek(0)
-    mo.audio(buf)
+    # buf = io.BytesIO()
+    # # array must be int16 or float32 for wavfile.write; scale if needed
+    # h_pb = h/max(abs(h))
+    # wavfile.write(buf, rate=44100, data=h_pb.astype(np.float32))
+    # buf.seek(0)
+    # mo.audio(buf)
     # mo.audio(h, rate=44100)
     return
 
@@ -71,8 +79,8 @@ def _(ChartPuck, mo, np, plt, π):
     ax.plot(np.real(uc), np.imag(uc), alpha=0.6)
     ax.set_xlim(-1.1, 1.1)
     ax.set_ylim(-1.1, 1.1)
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
+    ax.set_xlabel("real")
+    ax.set_ylabel("imaginary")
     ax.axhline()
     ax.axvline()
     ax.set_title("Drag the puck to change pole!")
