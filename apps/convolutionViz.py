@@ -21,10 +21,11 @@ def _():
 
 
 @app.cell
-def _():
+def _(mo):
     import numpy as np
     import matplotlib.pyplot as plt
-
+    style_path = str(mo.notebook_location() / "public" / "matplotlibrc")
+    plt.style.use(style_path)
     return np, plt
 
 
