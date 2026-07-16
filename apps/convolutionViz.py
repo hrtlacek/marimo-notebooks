@@ -35,7 +35,7 @@ def _(mo):
     # Discrete Convolution
 
     This little app tries to demonstrate one way of visualizing what hapens in digital convolution.
-    Our input shall be called $x[n]$, our outpuy $y[n]$ and our convolution kernel/impulse response $h[n]$. Of course $x$ and $h$ can be interchanged as $x*h=g*x$ but in this case we will think about it as described.
+    Our input shall be called $x[n]$, our output $y[n]$ and our convolution kernel/impulse response $h[n]$ of length $M$. Of course $x$ and $h$ can be interchanged as $x*h=h*x$ but in this case we will think about it as described.
 
     Often, in literature, we see the following formula of obtaining our result $y[n]$:
 
@@ -50,7 +50,7 @@ def _(mo):
     The same thing, just $h$ and $x$ exachenged. Now, what does this say?
     $x[n-m]$ can be recognized as our input delayed by $m$ samples. Multiplying it by the $m$th position seems logical: the further the $x$ values lies in the past (the higher $m$) the 'further' we have to look into the impulse response to find the factor to multiply with.
 
-    Or in other words: Every $y[n]$ is a sum of 'reverb tails'. The following visualisaztion illustrates this. All contributing 'reverb tails' are always drawn. Their sum at position $n$ is $y[n]$.
+    Or in other words: Every $y[n]$ is a sum of 'reverb tails' in the shape of $h$, scaled by $x$. The following visualisation illustrates this. All contributing 'reverb tails' are always drawn in white, contributing lats $M$ values of $x$ are displayed. The sum of the  'reverb tails' at position $n$ is $y[n]$.
     """)
     return
 
