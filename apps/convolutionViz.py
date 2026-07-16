@@ -34,7 +34,7 @@ def _(mo):
     mo.md(r"""
     # Discrete Convolution
 
-    This little app tries to demonstrate one way of visualizing what hapens in digital convolution.
+    This little app tries to demonstrate one way of visualizing what hapens in discrete convolution.
     Our input shall be called $x[n]$, our output $y[n]$ and our convolution kernel/impulse response $h[n]$ of length $M$. Of course $x$ and $h$ can be interchanged as $x*h=h*x$ but in this case we will think about it as described.
 
     Often, in literature, we see the following formula of obtaining our result $y[n]$:
@@ -48,9 +48,9 @@ def _(mo):
     $$ y[n] = \sum_{m=0}^{M-1} x[n-m]\cdot h[m]$$
 
     The same thing, just $h$ and $x$ exachenged. Now, what does this say?
-    $x[n-m]$ can be recognized as our input delayed by $m$ samples. Multiplying it by the $m$th position seems logical: the further the $x$ values lies in the past (the higher $m$) the 'further' we have to look into the impulse response to find the factor to multiply with.
+    $x[n-m]$ can be recognized as our input delayed by $m$ samples. Multiplying it by the $m$th position in $h$ seems logical: the further the $x$ values lies in the past (the higher $m$) the 'further' we have to look into the impulse response to find the factor to multiply with.
 
-    Or in other words: Every $y[n]$ is a sum of 'reverb tails' in the shape of $h$, scaled by $x$. The following visualisation illustrates this. All contributing 'reverb tails' are always drawn in white, contributing lats $M$ values of $x$ are displayed. The sum of the  'reverb tails' at position $n$ is $y[n]$.
+    Or in other words: Every $y[n]$ is a sum of 'reverb tails' in the shape of $h$, scaled by $x$. The following visualisation illustrates this. All contributing 'reverb tails' are always drawn in white, contributing last $M$ values of $x$ are displayed in white stem plots. The sum of the  'reverb tails' at position $n$ is $y[n]$.
     """)
     return
 
@@ -135,10 +135,14 @@ def _(M, N, h, mo, np, nslider, plt, x):
     for n in range(nM):
         contrib = np.zeros(contribLen)
         plt.clf()
+        tableVals = np.zeros(M)
         for m in range(M):
             # xind = max(0,n-m)
             thisContrib = xprep[n-m+M]*h
+            # print(thisContrib[m])
             y[n] += thisContrib[m]
+            tableVals[m] = thisContrib[m]
+        
             startPos = n-m+M
             endPos = n-m+M*2
             contrib = np.zeros(contribLen)
@@ -159,10 +163,20 @@ def _(M, N, h, mo, np, nslider, plt, x):
     plt.axvline(nM-1, alpha=0.3,label='$n$', ls='--')
     plt.legend(loc=4)
     plt.xlim([-0.2, N+0.2])
+    plt.title("$y[n]=$"+f"{y[n]:.4f}")
     plt.grid(True, alpha=0.2)
     # plt.show()
     ax1 = plt.gca()
-    mo.ui.matplotlib(ax1)
+    myplot = mo.ui.matplotlib(ax1)
+
+    table = mo.ui.table(
+        data={
+            "summands": list(tableVals),
+
+        },
+        label="Summands",
+    )
+    mo.hstack([myplot, table])
     return
 
 
